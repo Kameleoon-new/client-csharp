@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## 4.21.0 - 2026-04-22
+### Features
+* Improved the performance of the [`getDataFile()`](https://developers.kameleoon.com/feature-management-and-experimentation/web-sdks/csharp-sdk/#getdatafile) method. It now returns a cached [`DataFile`](https://developers.kameleoon.com/feature-management-and-experimentation/web-sdks/csharp-sdk/#datafile) instance that is refreshed whenever the SDK configuration is updated.
+* Added a new `dateModified` property to the [`DataFile`](https://developers.kameleoon.com/feature-management-and-experimentation/web-sdks/csharp-sdk/#datafile) object returned by the [`getDataFile`](https://developers.kameleoon.com/feature-management-and-experimentation/web-sdks/csharp-sdk/#getdatafile) method.
+* The [`getFeatureList`](https://developers.kameleoon.com/feature-management-and-experimentation/web-sdks/csharp-sdk/#getfeaturelist) method has been deprecated in favor of `getDataFile()`.
+
 ## 4.20.0 - 2026-04-01
 ### Features
 * Introduced a new [`GetDataFile`](https://developers.kameleoon.com/feature-management-and-experimentation/web-sdks/csharp-sdk#getdatafile) method. This method returns the current SDK configuration (also known as the **data file**) used for evaluation and targeting. It is **not** intended for production use to fetch variations for every feature flag in the returned list, as it is not optimized for performance. For that purpose, use [`GetVariations`](https://developers.kameleoon.com/feature-management-and-experimentation/web-sdks/csharp-sdk#getvariations) instead. `GetDataFile` is mainly useful for debugging or QA, for example to let internal users manually select a variant for a specific feature flag in production.
