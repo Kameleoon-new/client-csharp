@@ -15,6 +15,8 @@ All notable changes to this project will be documented in this file.
 * Improved the performance of the [`getDataFile()`](https://developers.kameleoon.com/feature-management-and-experimentation/web-sdks/csharp-sdk/#getdatafile) method. It now returns a cached [`DataFile`](https://developers.kameleoon.com/feature-management-and-experimentation/web-sdks/csharp-sdk/#datafile) instance that is refreshed whenever the SDK configuration is updated.
 * Added a new `dateModified` property to the [`DataFile`](https://developers.kameleoon.com/feature-management-and-experimentation/web-sdks/csharp-sdk/#datafile) object returned by the [`getDataFile`](https://developers.kameleoon.com/feature-management-and-experimentation/web-sdks/csharp-sdk/#getdatafile) method.
 * The [`getFeatureList`](https://developers.kameleoon.com/feature-management-and-experimentation/web-sdks/csharp-sdk/#getfeaturelist) method has been deprecated in favor of `getDataFile()`.
+### Bug fixes
+* Fixed an issue where permanently rejected Data API tracking requests (for example, responses with a `429` status code) prevented visitor sessions from being cleaned up. This could cause sessions to remain in memory indefinitely, leading to excessive RAM usage and potential server slowdowns.
 
 ## 4.20.0 - 2026-04-01
 ### Features
