@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## 4.22.1 - 2026-07-15
+### Bug fixes
+* Fixed an issue where calling the [`SetLegalConsent`](https://developers.kameleoon.com/feature-management-and-experimentation/web-sdks/csharp-sdk/#setlegalconsent) or [`GetVisitorCode`](https://developers.kameleoon.com/feature-management-and-experimentation/web-sdks/csharp-sdk/#getvisitorcode) method multiple times within a single request appended a duplicate `kameleoonVisitorCode` `Set-Cookie` header to the HTTP response on each call. For client browsers the duplicates are harmless (per [RFC 6265](https://datatracker.ietf.org/doc/html/rfc6265), the last `Set-Cookie` value wins), but the resulting header bloating could inflate responses enough to be rejected by intermediary proxies — for example, Cloudflare responding with HTTP 520 errors. The SDK now removes any previously added `kameleoonVisitorCode` `Set-Cookie` header before writing the new value, so the response always contains a single header with the latest visitor code.
+
 ## 4.22.0 - 2026-05-05
 ### Features
 * Added support for **during the current visit** and **during any of the last visits** settings across the following targeting conditions:
