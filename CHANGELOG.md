@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## 4.23.0 - 2026-08-04
+### Features
+* Added a `net6.0` build of the SDK package. On .NET 6 and later, the SDK now uses HTTP/2, with automatic fallback to HTTP/1.1. This significantly reduces transient network errors caused by reusing pooled connections that have already been closed by the server or an intermediary, which are commonly observed in cloud environments. Consumers targeting `netstandard2.0` or `net462` keep the previous behavior. We strongly recommend targeting `net6.0` or later to take advantage of HTTP/2.
+
 ## 4.22.1 - 2026-07-15
 ### Bug fixes
 * Fixed an issue where calling the [`SetLegalConsent`](https://developers.kameleoon.com/feature-management-and-experimentation/web-sdks/csharp-sdk/#setlegalconsent) or [`GetVisitorCode`](https://developers.kameleoon.com/feature-management-and-experimentation/web-sdks/csharp-sdk/#getvisitorcode) method multiple times within a single request appended a duplicate `kameleoonVisitorCode` `Set-Cookie` header to the HTTP response on each call. For client browsers the duplicates are harmless (per [RFC 6265](https://datatracker.ietf.org/doc/html/rfc6265), the last `Set-Cookie` value wins), but the resulting header bloating could inflate responses enough to be rejected by intermediary proxies — for example, Cloudflare responding with HTTP 520 errors. The SDK now removes any previously added `kameleoonVisitorCode` `Set-Cookie` header before writing the new value, so the response always contains a single header with the latest visitor code.
