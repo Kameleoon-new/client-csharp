@@ -1,6 +1,26 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## 4.24.0 - 2026-08-27
+### Features
+* Added support for SDK event handlers through the new [`SetEventHandler`][setEventHandler] API:
+  - `DataFileUpdate` notifies when the SDK data file (configuration) is updated with [polling](https://docs.kameleoon.com/developer-docs/feature-experimentation/technical-reference/technical-considerations#polling-default-%E2%80%8B) or [streaming](https://docs.kameleoon.com/developer-docs/feature-experimentation/technical-reference/technical-considerations#streaming-premium-option-%E2%80%8B) modes.
+  - `HttpRequest` notifies when SDK HTTP requests complete successfully or fail.
+  - HTTP request events include the request type, HTTP status or failure details, and request duration.
+  - Passing `null` to `SetEventHandler` clears the handler for the selected event type.
+* Added the new [`WaitInit(timeoutMilliseconds)`](https://docs.kameleoon.com/developer-docs/sdks/web-sdks/csharp-sdk#waitinit) overload, which limits how long the returned task may stay pending. The task settles with the result of the configuration fetch (successfully once the SDK is ready, or with `KameleoonException.Initialization` as soon as the fetch has failed); if no fetch result is available within the timeout, it fails with `KameleoonException.Initialization` caused by a `TimeoutException`.
+* Added the new `KameleoonException.Initialization` exception, which [`WaitInit`](https://docs.kameleoon.com/developer-docs/sdks/web-sdks/csharp-sdk#waitinit) now fails with when the SDK could not be initialized. The former `KameleoonException.SDKNotReady` is deprecated; it remains catchable because `Initialization` derives from it, and will be removed in the next major release.
+* The [`UpdateConfigurationHandler`](https://docs.kameleoon.com/developer-docs/sdks/web-sdks/csharp-sdk#updateconfigurationhandler) method has been deprecated in favor of `SetEventHandler` with the `DataFileUpdate` event type.
+* Added the new [`IsReady`][isReady] property, which returns `true` once the SDK has successfully loaded its configuration and is ready for use, and `false` otherwise (for example, while initialization is still in progress or has failed). Unlike [`WaitInit`](https://docs.kameleoon.com/developer-docs/sdks/web-sdks/csharp-sdk#waitinit), it returns immediately without blocking or throwing.
+### Bug fixes
+* The task returned by [`WaitInit`](https://docs.kameleoon.com/developer-docs/sdks/web-sdks/csharp-sdk#waitinit) now fails with a `KameleoonException.Initialization` exception when the SDK cannot load its configuration. Previously it completed successfully even though the SDK was not usable. Once the SDK becomes ready, a subsequent `WaitInit` call completes successfully.
+* When a configuration update fails, the SDK now falls back to the polling mode instead of waiting for the next streaming event, which could otherwise leave it serving an outdated configuration. It returns to the streaming mode as soon as an update succeeds again.
+* A targeting condition of an unknown type now evaluates to `false` instead of `true`. This prevents visitors from being targeted by conditions the SDK does not support (for example, web-specific conditions intended for the JS SDK).
+
+
+[setEventHandler]: https://docs.kameleoon.com/developer-docs/sdks/web-sdks/csharp-sdk#seteventhandler
+[isReady]: https://docs.kameleoon.com/developer-docs/sdks/web-sdks/csharp-sdk#isready
+
 ## 4.23.0 - 2026-08-04
 ### Features
 * Added a `net6.0` build of the SDK package. On .NET 6 and later, the SDK now uses HTTP/2, with automatic fallback to HTTP/1.1. This significantly reduces transient network errors caused by reusing pooled connections that have already been closed by the server or an intermediary, which are commonly observed in cloud environments. Consumers targeting `netstandard2.0` or `net462` keep the previous behavior. We strongly recommend targeting `net6.0` or later to take advantage of HTTP/2.
