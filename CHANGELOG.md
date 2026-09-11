@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## 4.24.1 - 2026-09-11
+### Bug fixes
+* Reduced the load on the Data API during its outages. After a failed tracking request, the SDK sends only one visitor's data per tracking request until a request succeeds, instead of retrying with a full-size (up to 2.5 MB) request on every tracking interval. Once the Data API is reachable again, the accumulated visitor data is sent in full-size requests as usual.
+* Visitor data of a failed tracking request is now reliably marked as unsent and re-sent with the next tracking request. Previously it could stay in the transmitting state forever when the request failed with an exception (for example, after the retry was exhausted).
+
 ## 4.24.0 - 2026-08-27
 ### Features
 * Added support for SDK event handlers through the new [`SetEventHandler`][setEventHandler] API:
