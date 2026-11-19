@@ -1,6 +1,17 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## 4.25.0 - 2026-11-19
+### Features
+* Real-time configuration streaming can now be enabled for server-side SDKs independently of client-side SDKs. The SDK reads the new `configUpdateMode` field of the configuration (`STREAMING` or `STREAMING_SERVER_ONLY` enables streaming) instead of `realTimeUpdate`.
+* Added support for version strings containing pre-release and build metadata, in accordance with [Semantic Versioning](https://semver.org/#semantic-versioning-200). Pre-release and build metadata components are currently ignored, and the version is normalized to `major.minor.patch`.
+### Bug fixes
+* Fixed the SDK getting stuck without configuration updates when the real-time streaming connection could not be established. The SDK now falls back to polling in that case and switches back to streaming once it becomes available again.
+* Fixed the SDK getting stuck without configuration updates on a stalled streaming connection (e.g. one silently dropped by a NAT or load balancer). The SDK now treats 6 minutes of silence as a connection failure: it reconnects, and falls back to polling if the new connection stalls as well.
+* `KameleoonClientFactory.Forget` now stops the forgotten client's background work (configuration polling or streaming, tracking, visitor expiration) and releases its network resources. Previously the forgotten client kept running until the process exited.
+* Lowered the log level of the message emitted when the streaming server closes the real-time (SSE) connection from `ERROR` to `INFO`. The streaming server recycles connections periodically and the SDK reconnects automatically, so this is expected behavior. Connection failures (error responses, network errors) are still logged as `ERROR`.
+* Fixed an older configuration being applied over a newer one when two configuration fetches (for example, triggered by two streaming events in quick succession) completed out of order. The SDK now ignores a fetched configuration whose `dateModified` is older than the current one's.
+
 ## 4.24.1 - 2026-09-11
 ### Bug fixes
 * Reduced the load on the Data API during its outages. After a failed tracking request, the SDK sends only one visitor's data per tracking request until a request succeeds, instead of retrying with a full-size (up to 2.5 MB) request on every tracking interval. Once the Data API is reachable again, the accumulated visitor data is sent in full-size requests as usual.
